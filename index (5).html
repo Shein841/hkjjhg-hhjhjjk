@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sneaker Finder — поиск кроссовок на Lamoda</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(145deg, #f0f5ff 0%, #e0eaff 100%);
+            min-height: 100vh;
+            color: #1e2a3a;
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c3e6d;
+            text-shadow: 2px 2px 0 #b0c4de;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #2c3e6d;
+            border-bottom: 2px dashed #6c8cbf;
+            padding-bottom: 15px;
+            display: inline-block;
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 15px 25px;
+            margin: 30px 0 40px;
+            box-shadow: 0 10px 25px rgba(30, 60, 100, 0.15);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #b8d0e9;
+        }
+
+        .search-box {
+            flex: 3 1 250px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2c3e6d;
+            font-size: 1.2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 16px 25px 16px 55px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            background: white;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #b8d0e9;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #4a6fa5;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        .filter-box {
+            flex: 1 1 180px;
+        }
+
+        .filter-box select {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 40px;
+            background: white;
+            font-size: 1rem;
+            color: #1e2a3a;
+            border: 1px solid #b8d0e9;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e6d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 16px;
+        }
+
+        .filter-box select:focus {
+            outline: none;
+            border-color: #4a6fa5;
+        }
+
+        .reset-btn {
+            flex: 0 0 auto;
+            background: #e6edf9;
+            border: 1px solid #4a6fa5;
+            color: #2c3e6d;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .reset-btn:hover {
+            background: #2c3e6d;
+            color: white;
+            border-color: #2c3e6d;
+        }
+
+        .sneaker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .sneaker-card {
+            background: white;
+            border-radius: 35px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(40, 70, 110, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid #c9d9f0;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .sneaker-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 40px rgba(44, 62, 109, 0.25);
+        }
+
+        .sneaker-img {
+            height: 200px;
+            background: #d9e6f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border-bottom: 2px solid #b8d0e9;
+        }
+
+        .sneaker-info {
+            padding: 20px 20px 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sneaker-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e2a3a;
+        }
+
+        .sneaker-brand {
+            display: inline-block;
+            background: #d9e6f5;
+            color: #2c3e6d;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sneaker-description {
+            color: #2e405b;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            flex-grow: 1;
+        }
+
+        .sneaker-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed #b8cce5;
+            padding-top: 15px;
+        }
+
+        .sneaker-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e3c5a;
+        }
+
+        .sneaker-price small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #6a7f9f;
+        }
+
+        .sneaker-footer i {
+            font-size: 1.5rem;
+            color: #6a7f9f;
+            opacity: 0.7;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #f5f9ff;
+            border-radius: 50px;
+            max-width: 450px;
+            width: 90%;
+            padding: 30px 30px 35px;
+            box-shadow: 0 40px 60px rgba(20, 40, 70, 0.4);
+            position: relative;
+            border: 2px solid #b8d0e9;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #2c3e6d;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #1a2745;
+        }
+
+        .modal-sneaker-img {
+            font-size: 6rem;
+            text-align: center;
+            background: #d9e6f5;
+            border-radius: 40px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #b8d0e9;
+        }
+
+        .modal-sneaker-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1e2a3a;
+            margin-bottom: 5px;
+        }
+
+        .modal-sneaker-brand {
+            display: inline-block;
+            background: #d9e6f5;
+            color: #2c3e6d;
+            padding: 5px 15px;
+            border-radius: 40px;
+            font-weight: 600;
+            margin: 10px 0 15px;
+        }
+
+        .modal-sneaker-description {
+            font-size: 1.1rem;
+            color: #2e405b;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .modal-sneaker-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e3c5a;
+            margin-bottom: 25px;
+        }
+
+        .modal-btn {
+            background: #2c3e6d;
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            border: 2px solid #b8d0e9;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .modal-btn:hover {
+            background: #1e2e4f;
+            transform: scale(1.02);
+        }
+
+        .modal-btn i {
+            margin-right: 10px;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.8rem;
+            color: #6a7f9f;
+            background: rgba(255,255,255,0.5);
+            border-radius: 60px;
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            color: #5a6f8f;
+            font-size: 0.95rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👟 Sneaker Finder</h1>
+            <div class="subtitle">Нажми на любую модель — ищи на Lamoda</div>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Модель или бренд...">
+            </div>
+            <div class="filter-box">
+                <select id="brandFilter">
+                    <option value="all">Все бренды</option>
+                    <option value="nike">Nike</option>
+                    <option value="adidas">Adidas</option>
+                    <option value="puma">Puma</option>
+                    <option value="reebok">Reebok</option>
+                    <option value="new balance">New Balance</option>
+                    <option value="asics">Asics</option>
+                </select>
+            </div>
+            <button class="reset-btn" id="resetBtn"><i class="fas fa-undo-alt" style="margin-right: 8px;"></i>Сбросить</button>
+        </div>
+
+        <div class="sneaker-grid" id="sneakerGrid">
+            <!-- карточки будут вставлены через JS -->
+        </div>
+
+        <footer>
+            <p>👟 Беговые, баскетбольные, повседневные — всё для спорта и стиля.</p>
+        </footer>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="sneakerModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-sneaker-img" id="modalEmoji">👟</div>
+            <h2 class="modal-sneaker-title" id="modalTitle">Название</h2>
+            <span class="modal-sneaker-brand" id="modalBrand">бренд</span>
+            <p class="modal-sneaker-description" id="modalDesc">Описание</p>
+            <div class="modal-sneaker-price" id="modalPrice">0 ₽</div>
+            <!-- Кнопка с динамической ссылкой на поиск Lamoda -->
+            <a href="#" target="_blank" class="modal-btn" id="modalSiteBtn">
+                <i class="fas fa-external-link-alt"></i> Искать на Lamoda
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Массив кроссовок: модель, бренд, описание, цена, эмодзи
+        const sneakers = [
+            { name: "Air Max 270", brand: "nike", description: "Повседневные кроссовки с массивной подошвой и максимальной амортизацией.", price: 12990, emoji: "👟" },
+            { name: "Ultraboost 22", brand: "adidas", description: "Лёгкие беговые кроссовки с энергоёмкой подошвой Boost.", price: 15990, emoji: "👟" },
+            { name: "RS-X", brand: "puma", description: "Модные кроссовки в ретро-стиле с массивным силуэтом.", price: 9990, emoji: "👟" },
+            { name: "Classic Leather", brand: "reebok", description: "Классические замшевые кроссовки на каждый день.", price: 7490, emoji: "👟" },
+            { name: "574", brand: "new balance", description: "Легендарная модель с комфортной посадкой и стильным дизайном.", price: 8990, emoji: "👟" },
+            { name: "Gel-Kayano 28", brand: "asics", description: "Стабильные беговые кроссовки с технологией GEL.", price: 13990, emoji: "👟" },
+            { name: "Air Force 1", brand: "nike", description: "Икона уличной моды, высокие или низкие — выбор за тобой.", price: 11990, emoji: "👟" },
+            { name: "NMD_R1", brand: "adidas", description: "Городские кроссовки с характерным дизайном и Boost-подошвой.", price: 12990, emoji: "👟" },
+            { name: "Suede Classic", brand: "puma", description: "Нестареющая классика из замши на любой сезон.", price: 6490, emoji: "👞" },
+            { name: "Zig Kinetica", brand: "reebok", description: "Футуристичный дизайн и энергоэффективная подошва Zig.", price: 11490, emoji: "👟" },
+            { name: "Fresh Foam 1080", brand: "new balance", description: "Максимальная мягкость для долгих пробежек.", price: 12490, emoji: "👟" },
+            { name: "Gel-Nimbus 24", brand: "asics", description: "Мягкая амортизация для комфортного бега.", price: 14490, emoji: "👟" },
+            { name: "Dunk Low", brand: "nike", description: "Скейтерская классика, популярная в уличной моде.", price: 10990, emoji: "👟" },
+            { name: "Yeezy 350", brand: "adidas", description: "Коллаборация с Канье Уэстом — стиль и премиум-комфорт.", price: 29990, emoji: "👟" }
+        ];
+
+        const sneakerGrid = document.getElementById('sneakerGrid');
+        const searchInput = document.getElementById('searchInput');
+        const brandFilter = document.getElementById('brandFilter');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Элементы модального окна
+        const modalOverlay = document.getElementById('sneakerModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalEmoji = document.getElementById('modalEmoji');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBrand = document.getElementById('modalBrand');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalPrice = document.getElementById('modalPrice');
+        const modalSiteBtn = document.getElementById('modalSiteBtn');
+
+        function openModal(sneaker) {
+            modalEmoji.textContent = sneaker.emoji;
+            modalTitle.textContent = sneaker.name;
+            // Приводим бренд к красивому написанию (первая буква заглавная)
+            let brandDisplay = sneaker.brand.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            modalBrand.textContent = brandDisplay;
+            modalDesc.textContent = sneaker.description;
+            modalPrice.innerHTML = `${sneaker.price.toLocaleString()} <small>₽</small>`;
+
+            // Формируем поисковый запрос для Lamoda (бренд + модель)
+            const query = `${sneaker.brand} ${sneaker.name}`;
+            const lamodaSearchUrl = `https://www.lamoda.ru/catalogsearch/result/?q=${encodeURIComponent(query)}`;
+            modalSiteBtn.href = lamodaSearchUrl;
+
+            modalOverlay.classList.add('active');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        modalClose.addEventListener('click', closeModal);
+
+        function renderSneakers() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const brand = brandFilter.value;
+
+            const filtered = sneakers.filter(s => {
+                const matchesSearch = s.name.toLowerCase().includes(searchTerm) || 
+                                      s.brand.toLowerCase().includes(searchTerm) ||
+                                      s.description.toLowerCase().includes(searchTerm);
+                const matchesBrand = brand === 'all' || s.brand === brand;
+                return matchesSearch && matchesBrand;
+            });
+
+            if (filtered.length === 0) {
+                sneakerGrid.innerHTML = `<div class="no-results">👟 Ничего не найдено. Попробуйте другие слова!</div>`;
+                return;
+            }
+
+            sneakerGrid.innerHTML = filtered.map(s => {
+                // индекс в оригинальном массиве (для data-id)
+                const idx = sneakers.indexOf(s);
+                return `
+                <div class="sneaker-card" data-sneaker-id="${idx}">
+                    <div class="sneaker-img">${s.emoji}</div>
+                    <div class="sneaker-info">
+                        <h3 class="sneaker-title">${s.name}</h3>
+                        <span class="sneaker-brand">${s.brand}</span>
+                        <p class="sneaker-description">${s.description}</p>
+                        <div class="sneaker-footer">
+                            <span class="sneaker-price">${s.price.toLocaleString()} <small>₽</small></span>
+                            <i class="fas fa-angle-right"></i>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        sneakerGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.sneaker-card');
+            if (!card) return;
+            const sneakerId = card.dataset.sneakerId;
+            if (sneakerId !== undefined) {
+                const sneaker = sneakers[parseInt(sneakerId)];
+                openModal(sneaker);
+            }
+        });
+
+        searchInput.addEventListener('input', renderSneakers);
+        brandFilter.addEventListener('change', renderSneakers);
+
+        resetBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            brandFilter.value = 'all';
+            renderSneakers();
+        });
+
+        renderSneakers();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
